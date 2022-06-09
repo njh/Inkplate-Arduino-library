@@ -72,7 +72,7 @@
 #define RTC_ALARM_MATCH_DHHMMSS 0b00001111
 #define RTC_ALARM_MATCH_WHHMSS  0b00011111
 
-#ifdef ARDUINO_INKPLATE6PLUS
+#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL) 
 #include "Frontlight.h"
 #include "Touch.h"
 #endif
@@ -92,7 +92,7 @@ class System : public Esp,
                virtual public Mcp,
 #endif
 
-#ifdef ARDUINO_INKPLATE6PLUS
+#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL) 
                public Touch,
                public Frontlight,
 #endif

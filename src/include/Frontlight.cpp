@@ -19,7 +19,7 @@
 #include "Frontlight.h"
 #include "defines.h"
 
-#ifdef ARDUINO_INKPLATE6PLUS
+#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL) 
 
 /**
  * @brief       setFrontlight function sets frontlight intensity for inkplate

@@ -18,7 +18,7 @@
 
 #include "Touch.h"
 
-#ifdef defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL) 
+#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL)
 
 uint16_t _tsXResolution;
 uint16_t _tsYResolution;
@@ -247,6 +247,7 @@ uint8_t Touch::tsGetData(uint16_t *xPos, uint16_t *yPos)
             fingers++;
     }
 
+#ifdef ARDUINO_INKPLATE6PLUS
     for (int i = 0; i < 2; i++)
     {
         tsGetXY((_raw + 1) + (i * 3), &xRaw[i], &yRaw[i]);
@@ -270,6 +271,33 @@ uint8_t Touch::tsGetData(uint16_t *xPos, uint16_t *yPos)
             break;
         }
     }
+#endif
+#ifdef ARDUINO_INKPLATECOOL
+    for (int i = 0; i < 2; i++)
+    {
+        tsGetXY((_raw + 1) + (i * 3), &xRaw[i], &yRaw[i]);
+        switch (getRotation())
+        {
+        case 3:
+            yPos[i] = ((xRaw[i] * E_INK_HEIGHT - 1) / _tsXResolution);
+            xPos[i] = E_INK_WIDTH - 1 - ((yRaw[i] * E_INK_WIDTH - 1) / _tsYResolution);
+            break;
+        case 0:
+            xPos[i] = ((xRaw[i] * E_INK_HEIGHT - 1) / _tsXResolution);
+            yPos[i] = ((yRaw[i] * E_INK_WIDTH - 1) / _tsYResolution);
+            break;
+        case 1:
+            yPos[i] = E_INK_HEIGHT - 1 - ((xRaw[i] * E_INK_HEIGHT - 1) / _tsXResolution);
+            xPos[i] = ((yRaw[i] * E_INK_WIDTH - 1) / _tsYResolution);
+            break;
+        case 2:
+            xPos[i] = E_INK_HEIGHT - 1 - ((xRaw[i] * E_INK_HEIGHT - 1) / _tsXResolution);
+            yPos[i] = E_INK_WIDTH - 1 - ((yRaw[i] * E_INK_WIDTH - 1) / _tsYResolution);
+            break;
+        }
+    }
+#endif
+
     return fingers;
 }
 

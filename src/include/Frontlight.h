@@ -18,7 +18,7 @@
 #ifndef __FRONTLIGHT_H__
 #define __FRONTLIGHT_H__
 
-#ifdef ARDUINO_INKPLATE6PLUS
+#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL) 
 
 #include "Arduino.h"
 #include "Mcp.h"
