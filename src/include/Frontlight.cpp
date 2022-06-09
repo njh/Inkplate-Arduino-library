@@ -19,7 +19,7 @@
 #include "Frontlight.h"
 #include "defines.h"
 
-#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL) 
+#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL)
 
 /**
  * @brief       setFrontlight function sets frontlight intensity for inkplate
