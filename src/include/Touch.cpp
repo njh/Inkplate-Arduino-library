@@ -18,7 +18,7 @@
 
 #include "Touch.h"
 
-#ifdef ARDUINO_INKPLATE6PLUS
+#ifdef defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATECOOL) 
 
 uint16_t _tsXResolution;
 uint16_t _tsYResolution;
