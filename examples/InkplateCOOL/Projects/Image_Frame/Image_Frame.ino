@@ -7,7 +7,7 @@
 
    Want to learn more about Inkplate? Visit www.inkplate.io
    Looking to get support? Write on our forums: http://forum.e-radionica.com/en/
-   28 July 2020 by e-radionica.com
+   21 June 2022 by Soldered.com
 */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
@@ -17,8 +17,8 @@
 
 #include "Inkplate.h"
 
-const char ssid[] = "Soldered";    // Your WiFi SSID
-const char *password = "dasduino"; // Your WiFi password
+const char ssid[] = "";    // Your WiFi SSID
+const char *password = ""; // Your WiFi password
 
 Inkplate display(INKPLATE_3BIT);
 
