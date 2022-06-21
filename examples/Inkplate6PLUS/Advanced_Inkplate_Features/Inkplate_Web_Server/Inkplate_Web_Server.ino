@@ -39,7 +39,7 @@ WebServer server(80);            // Create Web server on port 80 (HTTP port numb
 IPAddress serverIP;
 String txt;
 
-// If your Inkplate doesn't have external (or second) MCP I/O expander, you should uncomment next line,
+
 // otherwise your code could hang out when you send code to your Inkplate.
 // You can easily check if your Inkplate has second MCP by turning it over and 
 // if there is missing chip near place where "MCP23017-2" is written, but if there is
