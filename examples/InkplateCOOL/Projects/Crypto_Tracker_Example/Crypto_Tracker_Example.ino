@@ -130,9 +130,9 @@ void setup()
     if (refreshes == 0)
     {
         // Welcome screen
-        display.setCursor(70, 230);
+        display.setCursor(20, 230);
         display.setTextSize(2);
-        display.println(F("Welcome to Inkplate 6 cryptocurrency tracker example!"));
+        display.println(F("Welcome to Inkplate COOL cryptocurrency tracker example!"));
         display.setCursor(70, 250);
         display.println(F("Connecting to WiFi..."));
         display.display();

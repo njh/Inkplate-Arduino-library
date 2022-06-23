@@ -115,7 +115,12 @@ bool Network::getData(char *data)
 
     if (httpCode == 200)
     {
-        while (http.getStream().available())
+        while (http.getStream().available()) // If fetching data is slower than processing data,
+                                             // buffer for incoming data cold be emptied before
+                                             // fetching data is done and function available will
+                                             // return 0, so we need to add another while loop inside
+                                             // this while loop to wait a bit if buffer is emptied and
+                                             // check if there is more incoming data.
         {
             data[n++] = http.getStream().read();
             if (!http.getStream().available())

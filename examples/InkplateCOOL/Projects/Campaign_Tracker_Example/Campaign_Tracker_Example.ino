@@ -53,7 +53,13 @@ void setup()
     buf = (char *)ps_malloc(100000);
 
     HTTPClient http;
-    if (http.begin(URL) && http.GET() > 0)
+
+    if (http.begin(URL) && http.GET() > 0) // If fetching data is slower than processing data,
+                                           // buffer for incoming data cold be emptied before
+                                           // fetching data is done and function available will
+                                           // return 0, so we need to add another while loop inside
+                                           // this while loop to wait a bit if buffer is emptied and
+                                           // check if there is more incoming data.
     {
         while (http.getStreamPtr()->available())
         {

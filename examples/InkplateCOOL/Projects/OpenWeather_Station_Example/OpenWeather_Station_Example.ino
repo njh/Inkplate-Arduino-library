@@ -37,11 +37,11 @@
 // Change to your wifi ssid and password
 
 #include "OpenWeatherOneCall.h"
-#define HOMESSID "Soldered"
-#define HOMEPW   "dasduino"
+#define HOMESSID ""
+#define HOMEPW   ""
 
 // Openweather set up information
-#define ONECALLKEY "bf11bcaae795116ccc21beec25850aa0"
+#define ONECALLKEY ""
 
 float myLatitude = 45.560001; // I got this from Wikipedia
 float myLongitude = 18.675880;
@@ -416,7 +416,7 @@ void drawHourly()
 {
     const int yTop = 180;
     const int yHeight = 150;
-    const int xLeft = 45;
+    const int xLeft = 55;
     const int xWidth = 480;
     const int hoursDisplay = 24;
     const int hourPitch = xWidth / hoursDisplay;
@@ -454,10 +454,12 @@ void drawHourly()
     sprintf(Output, "%02.0fC", (maxTemp + .5));
     alignText(RIGHT, Output, xLeft - 5, yTop);
 
-    sprintf(Output, "%02.0f mm", minPrec);
+    sprintf(Output, "%02.0f", minPrec);
     alignText(LEFT, Output, xLeft + xWidth + 5, yTop + yHeight);
-    sprintf(Output, "%02.0f mm", (maxPrec + .499));
+    alignText(LEFT, "mm", xLeft + xWidth + 5, yTop + yHeight + 20);
+    sprintf(Output, "%02.0f", (maxPrec + .499));
     alignText(LEFT, Output, xLeft + xWidth + 5, yTop);
+    alignText(LEFT, "mm", xLeft + xWidth + 5, yTop + 20);
 
     float yTempScale = (yHeight / (round(maxTemp + 0.499) - round(minTemp - 0.5)));
 
