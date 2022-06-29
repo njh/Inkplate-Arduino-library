@@ -44,15 +44,15 @@ void Graphics::writePixel(int16_t x0, int16_t y0, uint16_t color)
 
     switch (rotation)
     {
-    case 1:
+    case 0:
         _swap_int16_t(x0, y0);
         x0 = height() - x0 - 1;
         break;
-    case 2:
+    case 1:
         x0 = width() - x0 - 1;
         y0 = height() - y0 - 1;
         break;
-    case 3:
+    case 2:
         _swap_int16_t(x0, y0);
         y0 = width() - y0 - 1;
         break;
@@ -282,88 +282,94 @@ void Inkplate::clean(uint8_t c, uint8_t rep)
  */
 void Inkplate::display1b(bool leaveOn)
 {
-    for (int i = 0; i < (E_INK_HEIGHT * E_INK_WIDTH) / 8; i++)
-    {
-        *(DMemoryNew + i) &= *(_partial + i);
-        *(DMemoryNew + i) |= (*(_partial + i));
-    }
-    uint32_t _pos;
+    memcpy(DMemoryNew, _partial, E_INK_WIDTH * E_INK_HEIGHT / 8);
+
+    uint32_t _send;
     uint8_t data;
     uint8_t dram;
 
     if (!einkOn())
         return;
 
-    clean(0, 1);
-    clean(1, 15);
-    clean(2, 1);
     clean(0, 5);
-    clean(2, 1);
     clean(1, 15);
-    for (int k = 0; k < 4; k++)
+    clean(0, 15);
+    clean(1, 15);
+    clean(0, 15);
+
+    for (int k = 0; k < 10; ++k)
     {
-        _pos = (E_INK_HEIGHT * E_INK_WIDTH / 8) - 1;
+        uint8_t *DMemoryNewPtr = DMemoryNew + (E_INK_WIDTH * E_INK_HEIGHT / 8) - 1;
         vscan_start();
-        for (int i = 0; i < E_INK_HEIGHT; i++)
+        for (int i = 0; i < E_INK_HEIGHT; ++i)
         {
-            dram = *(DMemoryNew + _pos);
-            data = LUTW[((~dram) >> 4) & 0x0F];
-            hscan_start(pinLUT[data]);
-            data = LUTW[(~dram) & 0x0F];
-            GPIO.out_w1ts = pinLUT[data] | CL;
+            dram = *(DMemoryNewPtr--);
+            data = LUTB[dram >> 4];
+            _send = pinLUT[data];
+            hscan_start(_send);
+            data = LUTB[dram & 0x0F];
+            _send = pinLUT[data];
+            GPIO.out_w1ts = (_send) | CL;
             GPIO.out_w1tc = DATA | CL;
-            _pos--;
-            for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); j++)
+
+            for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); ++j)
             {
-                dram = *(DMemoryNew + _pos);
-                data = LUTW[((~dram) >> 4) & 0x0F];
-                GPIO.out_w1ts = pinLUT[data] | CL;
+                dram = *(DMemoryNewPtr--);
+                data = LUTB[dram >> 4];
+                _send = pinLUT[data];
+                GPIO.out_w1ts = (_send) | CL;
                 GPIO.out_w1tc = DATA | CL;
-                data = LUTW[(~dram) & 0x0F];
-                GPIO.out_w1ts = pinLUT[data] | CL;
+                data = LUTB[dram & 0x0F];
+                _send = pinLUT[data];
+                GPIO.out_w1ts = (_send) | CL;
                 GPIO.out_w1tc = DATA | CL;
-                _pos--;
             }
-            GPIO.out_w1ts = CL;
+            GPIO.out_w1ts = (_send) | CL;
             GPIO.out_w1tc = DATA | CL;
             vscan_end();
         }
         delayMicroseconds(230);
     }
 
-    _pos = (E_INK_HEIGHT * E_INK_WIDTH / 8) - 1;
+    uint16_t _pos = (E_INK_WIDTH * E_INK_HEIGHT / 8) - 1;
     vscan_start();
-    for (int i = 0; i < E_INK_HEIGHT; i++)
+    for (int i = 0; i < E_INK_HEIGHT; ++i)
     {
         dram = *(DMemoryNew + _pos);
-        data = LUTB[(dram >> 4) & 0x0F];
-        hscan_start(pinLUT[data]);
-        data = LUTB[dram & 0x0F];
-        GPIO.out_w1ts = (pinLUT[data]) | CL;
+        data = LUT2[dram >> 4];
+        _send = pinLUT[data];
+        hscan_start(_send);
+        data = LUT2[dram & 0x0F];
+        _send = pinLUT[data];
+        GPIO.out_w1ts = (_send) | CL;
         GPIO.out_w1tc = DATA | CL;
         _pos--;
-        for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); j++)
+        for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); ++j)
         {
             dram = *(DMemoryNew + _pos);
-            data = LUTB[(dram >> 4) & 0x0F];
-            GPIO.out_w1ts = (pinLUT[data]) | CL;
+            data = LUT2[dram >> 4];
+            _send = pinLUT[data];
+            GPIO.out_w1ts = (_send) | CL;
             GPIO.out_w1tc = DATA | CL;
-            data = LUTB[dram & 0x0F];
-            GPIO.out_w1ts = (pinLUT[data]) | CL;
+            data = LUT2[dram & 0x0F];
+            _send = pinLUT[data];
+            GPIO.out_w1ts = (_send) | CL;
             GPIO.out_w1tc = DATA | CL;
             _pos--;
         }
-        GPIO.out_w1ts = CL;
+        GPIO.out_w1ts = (_send) | CL;
         GPIO.out_w1tc = DATA | CL;
         vscan_end();
     }
     delayMicroseconds(230);
-    clean(2, 2);
+
+    clean(2, 1);
     clean(3, 1);
     vscan_start();
 
     if (!leaveOn)
         einkOff();
+
     _blockPartial = 0;
 }
 
@@ -380,19 +386,17 @@ void Inkplate::display3b(bool leaveOn)
     if (!einkOn())
         return;
 
-    clean(0, 1);
-    clean(1, 15);
-    clean(2, 1);
     clean(0, 5);
-    clean(2, 1);
     clean(1, 15);
-
-    for (int k = 0; k < 9; k++)
+    clean(0, 15);
+    clean(1, 15);
+    clean(0, 15);
+    for (int k = 0; k < 8; ++k)
     {
-        uint8_t *dp = DMemory4Bit + (E_INK_HEIGHT * E_INK_WIDTH / 2);
+        uint8_t *dp = DMemory4Bit + E_INK_WIDTH * E_INK_HEIGHT / 2;
 
         vscan_start();
-        for (int i = 0; i < E_INK_HEIGHT; i++)
+        for (int i = 0; i < E_INK_HEIGHT; ++i)
         {
             uint32_t t = GLUT2[k * 256 + (*(--dp))];
             t |= GLUT[k * 256 + (*(--dp))];
@@ -402,7 +406,7 @@ void Inkplate::display3b(bool leaveOn)
             GPIO.out_w1ts = t | CL;
             GPIO.out_w1tc = DATA | CL;
 
-            for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); j++)
+            for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); ++j)
             {
                 t = GLUT2[k * 256 + (*(--dp))];
                 t |= GLUT[k * 256 + (*(--dp))];
@@ -486,7 +490,7 @@ uint32_t Inkplate::partialUpdate(bool _forced, bool leaveOn)
     if (!einkOn())
         return 0;
 
-    for (int k = 0; k < 5; k++)
+    for (int k = 0; k < 9; k++)
     {
         vscan_start();
         n = (E_INK_WIDTH * E_INK_HEIGHT / 4) - 1;
